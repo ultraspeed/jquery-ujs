@@ -10,6 +10,7 @@ jQuery(function ($) {
          */
         triggerAndReturn: function (name, data) {
             var event = new jQuery.Event(name);
+            
             this.trigger(event, data);
 
             return event.result !== false;
@@ -25,12 +26,13 @@ jQuery(function ($) {
                 method  = el.attr('method') || el.attr('data-method') || 'GET',
                 url     = el.attr('action') || el.attr('href');
 
-            if (el.context.tagName.toUpperCase() === 'FORM') {
+            if (el.context.tagName.toLowerCase() === 'form') {
                 data = el.serializeArray();
             }
 
-            // TODO: should let the developer know no url was found
-            if (url !== undefined) {
+            if (url === undefined) {
+                alert("URL cannot be undefined");
+            } else {
                 if (el.triggerAndReturn('ajax:before')) {
                     $.ajax({
                         url: url,
@@ -60,8 +62,9 @@ jQuery(function ($) {
     /**
      *  confirmation handler
      */
-    $('a[data-confirm],input[data-confirm]').live('click', function () {
+    $('a[data-confirm], input[data-confirm]').live('click', function () {
         var el = $(this);
+        
         if (el.triggerAndReturn('confirm')) {
             if (!confirm(el.attr('data-confirm'))) {
                 return false;
@@ -77,7 +80,7 @@ jQuery(function ($) {
         e.preventDefault();
     });
 
-    $('a[data-remote="true"],input[data-remote="true"]').live('click', function (e) {
+    $('a[data-remote="true"], input[data-remote="true"]').live('click', function (e) {
         $(this).callRemote();        
         e.preventDefault();
     });
@@ -98,7 +101,8 @@ jQuery(function ($) {
         $(this).children('input[data-disable-with]').each(function (i, el) {
             var input = $(el);
             input.removeAttr('disabled')
-                 .val(input.data('enable_with'));
+                 .val(input.data('enable_with'))
+                 .removeData('enable_with');
         });
     });
 });
